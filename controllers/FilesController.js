@@ -42,4 +42,35 @@ async function getIndex(req, res){
     res.send(files)
 }
 
-export { getShow, getIndex }
+
+async function getFile(req, res){
+  const fileId = req.params[id]
+  const file = await dbClient.client.collection('files').findOne({'id': fileId})
+  if (file === null){
+    res.statusCode = 404
+    res.send("Not found")
+  }
+  const token = req.headers['X-Token']
+  const noAuth = token === null;
+  const userId = await redisClient.get("auth_"+token.toString())
+  const notOwner = file['userId'] !== userId
+  if(!tokenfile['isPublic'] && (noAuth || notOwner)){
+    res.statusCode = 404
+    res.send("Not found")
+  }
+
+  if (file['type'] === 'folder'){
+    res.statusCode = 400
+    res.send("A folder doesn't have content")
+  }
+
+  if (! fs.existsSync(file['localPath'])){
+    res.statusCode = 404
+    res.send("Not found")
+  }
+
+  res.contentType(mime.lookup(file['name']))
+  res.send(file['data'])
+}
+
+export { getShow, getIndex, getFile}
