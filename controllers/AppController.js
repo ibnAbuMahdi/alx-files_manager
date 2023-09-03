@@ -1,16 +1,18 @@
 import redisClient from '../utils/redis';
+import dbClient from '../utils/db'
 
 function getStatus(req, res){
   if (redisClient.isAlive()){
     res.statusCode = 200;
-    res.send({ "redis": redisClient.isAlive() }); // TODO: db
+    res.send({ "redis": redisClient.isAlive(), "db": dbClient.isAlive() });
   }
 }
 
-function getStats(req, res){
-  //TODO: db
+async function getStats(req, res){
   res.statusCode = 200;
-  res.send({"users": 12, "files": 1231});
+  const usrs = await dbClient.nbUsers();
+  const fls = await dbClient.nbFiles();
+  res.send({"users": usrs, "files": fls});
 }
 
 

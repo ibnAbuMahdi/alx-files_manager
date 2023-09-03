@@ -32,7 +32,7 @@ class DBClient{
     }
   }
 
-  async nbfiles() {
+  async nbFiles() {
     try {
       await this.client.connect();
       const db = client.db();
