@@ -8,6 +8,6 @@ Async function getMe(req, res){
     res.statusCode = 401
     throw new Error("Unauthorized")
   }
-  const user = await dbClient.findOne({"id": user_id}, {projection: {email: 1, id: 1}})
+  const user = await dbClient.client.collection('users').findOne({"id": user_id}, {projection: {email: 1, id: 1}})
   res.send(user)
 }
