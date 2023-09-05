@@ -9,13 +9,13 @@ class DBClient{
     const url = `mongodb://${host}:${port}/${database}`;
 
     this.client = new MongoClient(url);
+    this.client.connect();
 
   }
 
-  async isAlive() {
+  isAlive() {
     try {
-     await this.client.connect();
-      return true;
+      return this.client.isConnected();
     } catch (err) {
       return false;
     }
@@ -25,7 +25,7 @@ class DBClient{
     try {
       await this.client.connect();
       const db = this.client.db();
-      const num = await db.users.countDocuments();
+      const num = await db.collection('users').countDocuments();
       return num;
     } catch (err) {
       console.log(err);
@@ -35,8 +35,8 @@ class DBClient{
   async nbFiles() {
     try {
       await this.client.connect();
-      const db = client.db();
-      const num = db.files.countDocuments();
+      const db = this.client.db();
+      const num = await db.collection('files').countDocuments();
       return num;
     } catch (err) {
         console.log(err);
