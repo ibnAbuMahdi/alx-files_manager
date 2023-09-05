@@ -1,6 +1,6 @@
 import dbClient from '../utils/db'
 import crypto from 'crypto'
-import { uuid } from 'uuidv4'
+import { uuid } from 'uuid'
 import redisClient from '../utils/redis'
 
 async function getConnect(req, res){
@@ -26,7 +26,7 @@ async function getConnect(req, res){
   res.send({"token": token})
 }
 
-Async function getDisconnect(req, res){
+async function getDisconnect(req, res){
   const token = req.headers['X-Token']
   const user = await redisClient.get("auth_"+token)
 
@@ -38,3 +38,5 @@ Async function getDisconnect(req, res){
   res.statusCode = 401
   throw new Error("Unauthorized")
 }
+
+export { getConnect, getDisconnect }

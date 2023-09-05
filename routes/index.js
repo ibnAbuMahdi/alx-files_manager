@@ -2,8 +2,7 @@ import { Router } from 'express';
 import { getStatus, getStats } from '../controllers/AppController';
 import { getConnect, getDisconnect } from '../controllers/AuthController';
 import { getShow, getIndex } from '../controllers/FilesController';
-import { getMe } from '../controllers/UsersController';
-import postNew from '../controllers/UsersController';
+import { getMe, postNew } from '../controllers/UsersController';
 
 const router = Router();
 

@@ -9,15 +9,10 @@ class DBClient {
 
     this.client = new MongoClient(url);
     this.client.connect();
-
   }
 
   isAlive() {
-    try {
-      return this.client.isConnected();
-    } catch (err) {
-      return false;
-    }
+    return this.client.isConnected();
   }
 
   async nbUsers() {
