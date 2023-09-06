@@ -93,10 +93,43 @@ async function getUpload(req, res){
     let path = process.env['FOLDER_PATH']??"/tmp/files_manager"
     path = path+'/'+uuidv4()
     fs.writeFile(path, data)
-    const file = {name, type, parentId, isPublic, data, userId}
+    const file = {name, localPath: path, type, parentId, isPublic, userId}
     const result = await db.collection('files').insertOne(file)
     const fileDoc = {id: result.ops[0]._id.toString(), userId, name, type, parentId, isPublic}
     res.statusCode = 201
     res.send(fileDoc)
 }
-export { getShow, getIndex, getUpload }
+
+async function getFile(req, res){
+  const fileId = req.params[id]
+  await dbClient.client.connect()
+  const db = dbClient.client.db(process.env['DB_DATABASE'] || 'files_manager')
+  const file = await db.collection('files').findOne({'_id': ObjectId(fileId)})
+  if (file === null){
+    res.statusCode = 404
+    res.send("Not found")
+  }
+  const token = req.header('X-Token')
+  const noAuth = token === null;
+  const userId = await redisClient.get("auth_"+token.toString())
+  const notOwner = file['userId'] !== userId
+  if(!tokenfile['isPublic'] && (noAuth || notOwner)){
+    res.statusCode = 404
+    res.send("Not found")
+  }
+
+  if (file['type'] === 'folder'){
+    res.statusCode = 400
+    res.send("A folder doesn't have content")
+  }
+
+  if (! fs.existsSync(file['localPath'])){
+    res.statusCode = 404
+    res.send("Not found")
+  }
+
+  res.contentType(mime.lookup(file['name']))
+  res.send(file['data'])
+}
+
+export { getShow, getIndex, getUpload, getFile }
