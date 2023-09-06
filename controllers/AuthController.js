@@ -1,33 +1,33 @@
 import dbClient from '../utils/db'
 import crypto from 'crypto'
-import { uuid } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import redisClient from '../utils/redis'
 
 async function getConnect(req, res){
-  const b64 = req.headers['Authorization']
-
+  const b64 = req.header('Authorization')
+  await dbClient.client.connect()
+  const db = dbClient.client.db(process.env['DB_DATABASE'] || 'files_manager')
   let buff = new Buffer(b64.split(' ')[1], 'base64')
   let data = buff.toString('ascii')
   const email = data.split(':')[0]
   const pword = data.split(':')[1]
-  const hpword = crypto.createHash('sha1').update(pword).digest('hex')
-  const user = await dbClient.findOne({email: email, password: hpword})
+  const hpword = crypto.createHash('sha1').update(pword).digest('hex').toString()
+  const user = await db.collection('users').findOne({email: email, password: hpword})
   
   if (user === null){
     res.statusCode = 401
-    throw new Error('Unauthorized')
+    res.send({"error": 'Unauthorized'})
   }
-  
-  const token = uuid()
+  const token = uuidv4()
   const key = "auth_"+token
 
-  await redisClient.set(key, user.id, 24*60*60)
+  await redisClient.set(key, user._id.toString(), 24*60*60)
   res.statusCode = 200
   res.send({"token": token})
 }
 
 async function getDisconnect(req, res){
-  const token = req.headers['X-Token']
+  const token = req.header('X-Token')
   const user = await redisClient.get("auth_"+token)
 
   if (user !== null){
@@ -36,7 +36,7 @@ async function getDisconnect(req, res){
     res.end()
   }
   res.statusCode = 401
-  throw new Error("Unauthorized")
+  res.send({"error": "Unauthorized"})
 }
 
 export { getConnect, getDisconnect }
