@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getStatus, getStats } from '../controllers/AppController';
 import { getConnect, getDisconnect } from '../controllers/AuthController';
-import { getShow, getIndex } from '../controllers/FilesController';
+import { getShow, getIndex, postUpload } from '../controllers/FilesController';
 import { getMe, postNew } from '../controllers/UsersController';
 
 const router = Router();
@@ -14,6 +14,6 @@ router.get('/users/me', getMe);
 router.get('/files/:id', getShow);
 router.get('/files', getIndex);
 router.post('/users', postNew);
-// router.post('/files', postUploads);
+router.post('/files', postUpload);
 
 export default router;

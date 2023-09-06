@@ -40,7 +40,6 @@ async function postNew(req, res) {
     const result = await db.collection('users').insertOne(newUser);
     return res.status(201).json({ email, id: result.insertedId });
   } catch (err) {
-    console.log(deb);
     console.log(err);
     return res.status(500).json({ error: 'Internal server error' });
   }
