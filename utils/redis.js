@@ -9,7 +9,7 @@ class RedisClient {
     });
   }
 
-  isAlive(){
+  isAlive() {
     return this.client !== null;
   }
 

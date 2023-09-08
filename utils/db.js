@@ -22,7 +22,7 @@ class DBClient {
       const num = await db.collection('users').countDocuments();
       return num;
     } catch (err) {
-      console.log(err);
+      return 0;
     }
   }
 
@@ -33,7 +33,7 @@ class DBClient {
       const num = await db.collection('files').countDocuments();
       return num;
     } catch (err) {
-      console.log(err);
+      return 0;
     }
   }
 }

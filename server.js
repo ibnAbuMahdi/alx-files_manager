@@ -8,4 +8,4 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/', router);
 
-app.listen(process.env['PORT'] || 5000);
+app.listen(process.env.PORT || 5000);
