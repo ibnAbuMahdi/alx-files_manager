@@ -48,7 +48,7 @@ async function getIndex(req, res){
     res.send(files)
 }
 
-async function getUpload(req, res){
+async function postUpload(req, res){
     const { name, type, parentId, isPublic, data } = req.body
     await dbClient.client.connect()
     const db = dbClient.client.db(process.env['DB_DATABASE'] || 'files_manager')
@@ -132,4 +132,4 @@ async function getFile(req, res){
   res.send(file['data'])
 }
 
-export { getShow, getIndex, getUpload, getFile }
+export { getShow, getIndex, postUpload, getFile }
